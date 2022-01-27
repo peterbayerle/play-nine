@@ -1,0 +1,17 @@
+@media screen and (max-width: 540px) {
+    #home-page {
+        width:80%;
+    }
+}
+
+@media screen and (min-width: 540px) and (max-width: 780px) {
+    #home-page {
+        width:50%;
+    }
+}
+
+@media screen and (min-width: 780px) {
+    #home-page {
+        width:33%;
+    }
+}

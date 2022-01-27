@@ -6,7 +6,8 @@ from . import games_manager
 def handle_create_game():
     lobby_id = games_manager.add_game()
 
-    emit("game_joined", {"lobby_id": lobby_id})
+    join_room(lobby_id)
+    emit("game_joined", {"lobby_id": lobby_id}, to=lobby_id)
 
 @socketio.on("join_game")
 def handle_join_game(json):
@@ -16,7 +17,7 @@ def handle_join_game(json):
 
     if added_player:
         join_room(lobby_id)
-        emit("game_joined", to=lobby_id)
+        emit("game_joined", {"lobby_id": lobby_id}, to=lobby_id)
     else:
         emit("failed_to_join")
 
