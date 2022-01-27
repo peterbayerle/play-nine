@@ -1,4 +1,4 @@
-# pPlay Nine app
+# Play Nine app
 
 ## Server
 ### Install dependencies and activate venv
