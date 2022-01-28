@@ -7,9 +7,6 @@ export const SocketIOClient = ({ router }) => {
         emit: () => {},
     });
 
-    const [lobbyId, setLobbyId] = useState('');
-    const [failedToJoin, setFailedToJoin] = useState(false);
-
     useEffect(() => {
         const s = io('http://127.0.0.1:5000/');
         s.on('connect', () => {
@@ -17,20 +14,5 @@ export const SocketIOClient = ({ router }) => {
         })
     }, []);
 
-    useEffect(() => {
-        socket.on('game_joined', ({lobby_id}) => {
-            setLobbyId(lobby_id);
-        });
-
-        socket.on('failed_to_join', () => {
-            setFailedToJoin(true);
-        })
-
-    }, [socket]);
-
-    useEffect(() => {
-
-    }, [lobbyId]);
-
-    return <>{router({socket, lobbyId, failedToJoin})}</>
+    return <>{router({socket})}</>
 }

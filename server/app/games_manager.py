@@ -1,6 +1,7 @@
 from app.utils import generate_code
 from app.play_nine import PlayNine
 
+
 class Game: 
     def __init__(self, lobby_id):
         self.lobby_id = lobby_id
@@ -26,13 +27,23 @@ class Game:
         else:
             self.players['p2'] = None
 
-    def is_empty(self):
-        return not (self.players['p1'] or self.players['p2'])
+    @property 
+    def num_players(self):
+        c = 0
+        c += 1 if self.players['p1'] else 0
+        c += 1 if self.players['p2'] else 0
+        return c
 
 class GamesManager: 
     def __init__(self):
         self.lobby_to_game = {} # maps lobby id to game
         self.player_to_lobby = {} # maps player id to lobby id
+
+    def has_space_available(self, lobby_id):
+        game = self.lobby_to_game.get(lobby_id)
+        if not game: return False
+
+        return game.num_players < 2
 
     def add_game(self):
         lobby_id = generate_code(excluding=self.lobby_to_game.keys())
@@ -51,11 +62,13 @@ class GamesManager:
         return player_added
 
     def remove_player(self, player_id):
-        lobby_id = self.player_to_lobby[player_id]
-        del self.player_to_lobby[player_id]
+        lobby_id = self.player_to_lobby.get(player_id, False)
 
-        game = self.lobby_to_game[lobby_id]
-        game.remove_player(player_id)
+        if lobby_id:
+            del self.player_to_lobby[player_id]
 
-        if game.is_empty():
-            del self.lobby_to_game[lobby_id]
+            game = self.lobby_to_game[lobby_id]
+            game.remove_player(player_id)
+
+            if not game.num_players:
+                del self.lobby_to_game[lobby_id]
