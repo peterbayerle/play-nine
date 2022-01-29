@@ -10,7 +10,7 @@ export const Game = ({ socket }) => {
     const lobbyId = params.lobbyId
 
     useEffect(() => {
-        socket.emit('join_game', { lobby_id: lobbyId })
+        socket.emit('join_game', { lobby_id: lobbyId, player_id: socket.id })
 
         socket.on('game_joined', ({ lobby_id }) => {
             setJoined(true)
@@ -18,7 +18,7 @@ export const Game = ({ socket }) => {
         });
 
         socket.on('failed_to_join', () => {
-            navigate('/', {state: {failedToJoin: true, lobbyId}});
+            navigate('/') //, {state: {failedToJoin: true, lobbyId}});
         });
     // eslint-disable-next-line
     }, [socket]);

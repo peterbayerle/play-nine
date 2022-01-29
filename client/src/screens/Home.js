@@ -29,7 +29,6 @@ export const Home = ({ socket }) => {
         });
 
         socket.on('space_available', ({ lobby_id }) => {
-            console.log('space available')
             navigate(`/${lobby_id}`);
         });
     // eslint-disable-next-line
