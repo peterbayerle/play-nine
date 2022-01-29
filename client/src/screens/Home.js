@@ -23,14 +23,21 @@ export const Home = ({ socket }) => {
     };
 
     useEffect(() => {
-        socket.on('failed_to_join', () => {
-            console.log('full')
+        const recievedFailedToJoin = () => {
             setFailedToJoin(true);
-        });
+        };
 
-        socket.on('space_available', ({ lobby_id }) => {
+        const recievedSpaceAvailable = ({ lobby_id }) => {
             navigate(`/${lobby_id}`);
-        });
+        };
+
+        socket.on('failed_to_join', recievedFailedToJoin);
+        socket.on('space_available', recievedSpaceAvailable);
+
+        return () => {
+            socket.off('failed_to_join', recievedFailedToJoin);
+            socket.off('space_available', recievedSpaceAvailable);
+        }
     // eslint-disable-next-line
     }, [socket])
 

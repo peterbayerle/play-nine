@@ -10,16 +10,25 @@ export const Game = ({ socket }) => {
     const lobbyId = params.lobbyId
 
     useEffect(() => {
-        socket.emit('join_game', { lobby_id: lobbyId, player_id: socket.id })
-
-        socket.on('game_joined', ({ lobby_id }) => {
+        const recievedGameJoined = ({ lobby_id }) => {
             setJoined(true)
             console.log('joined', lobby_id)
-        });
+        };
 
-        socket.on('failed_to_join', () => {
-            navigate('/') //, {state: {failedToJoin: true, lobbyId}});
-        });
+        const recievedFailedToJoin = () => {
+            navigate('/', {state: {failedToJoin: true, lobbyId}});
+        };
+
+        socket.emit('join_game', { lobby_id: lobbyId, player_id: socket.id })
+
+        socket.on('game_joined', recievedGameJoined);
+        socket.on('failed_to_join', recievedFailedToJoin);
+
+        return () => {
+            socket.emit('back_button_pressed', {player_id: socket.id});
+            socket.off('game_joined', recievedGameJoined);
+            socket.off('failed_to_join', recievedFailedToJoin);
+        }
     // eslint-disable-next-line
     }, [socket]);
 
