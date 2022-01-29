@@ -13,7 +13,7 @@ def create_app(debug=False):
     )
 
     from app import events
-    socketio.init_app(app)
+    socketio.init_app(app, logger=False, engineio_logger=False, )
 
     return app
 

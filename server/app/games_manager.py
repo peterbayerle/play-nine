@@ -12,7 +12,9 @@ class Game:
         }
 
     def add_player(self, player_id):
-        if not self.players['p1']:
+        if player_id in self.players.values():
+            return True
+        elif not self.players['p1']:
             self.players['p1'] = player_id
             return True
         elif not self.players['p2']:
