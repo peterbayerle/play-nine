@@ -3,40 +3,29 @@ import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup'
 import FormControl from 'react-bootstrap/FormControl'
-import Form from 'react-bootstrap/Form'
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import './Home.css'
 
 export const Home = ({ socket }) => {
-    const navigate = useNavigate();
-    const location = useLocation();
     const [fieldEntry, setFieldEntry] = useState('');
-    const [failedToJoin, setFailedToJoin] = useState(location.state ? location.state.failedToJoin : false);
+    const navigate = useNavigate();
 
     const createGame = () => {
         socket.emit("create_game");
     }
 
-    const submitFieldEntry = () => {
-        socket.emit("has_space_available", { lobby_id: fieldEntry })
-    };
+    const recievedGameCreated = ({ lobby_id }) => {
+        navigate(`/${lobby_id}`);
+    }
+
+    const submitFieldEntry = _ => { recievedGameCreated({lobby_id: fieldEntry}); }
 
     useEffect(() => {
-        const recievedFailedToJoin = () => {
-            setFailedToJoin(true);
-        };
-
-        const recievedSpaceAvailable = ({ lobby_id }) => {
-            navigate(`/${lobby_id}`);
-        };
-
-        socket.on('failed_to_join', recievedFailedToJoin);
-        socket.on('space_available', recievedSpaceAvailable);
+        socket.on('game_created', recievedGameCreated);
 
         return () => {
-            socket.off('failed_to_join', recievedFailedToJoin);
-            socket.off('space_available', recievedSpaceAvailable);
+            socket.off('game_created', recievedGameCreated);
         }
     // eslint-disable-next-line
     }, [socket])
@@ -55,22 +44,19 @@ export const Home = ({ socket }) => {
                 <InputGroup className="mb-3 pt-3">
                     <FormControl
                         placeholder="Lobby Id"
-                        defaultValue={failedToJoin && location.state ? location.state.lobbyId : ''}
                         aria-label="Enter Lobby Id"
-                        className={`${failedToJoin ? 'is-invalid' : ''} rounded-left`}
-                        onSubmit={submitFieldEntry}
+                        className={"rounded-left"}
+                        // onSubmit={submitFieldEntry}
                         onChange={event => { setFieldEntry(event.target.value); }}
                     />
                     <Button 
                         className="rounded" 
                         variant="info"
                         onClick={submitFieldEntry}
+                        disabled={fieldEntry.length !== 4}
                     >
                         Join game
                     </Button>
-                    <Form.Control.Feedback type="invalid">
-                        This lobby is full or does not exist!
-                    </Form.Control.Feedback>
                 </InputGroup>
             </div>
         </Container>

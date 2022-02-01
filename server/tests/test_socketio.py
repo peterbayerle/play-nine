@@ -2,6 +2,10 @@ import unittest
 from app import create_app, socketio
 
 
+def get_resp_arg(client, arg_name):
+    return client.get_received().pop().get("args").pop().get(arg_name)
+
+
 class TestServer(unittest.TestCase):
     def setUp(self):
         self.app = create_app("testing")
@@ -15,37 +19,25 @@ class TestServer(unittest.TestCase):
         self.client1.emit("create_game") 
         lobby_id = self.client1.get_received().pop().get("args").pop().get("lobby_id")
         
-        # first client checks if space is available and joins
-        self.client1.emit("has_space_available", {"lobby_id": lobby_id})
-        resp = self.client1.get_received()[0]
-        self.assertEqual(resp.get("name"), "space_available")
-        self.assertEqual(resp.get("args").pop().get("lobby_id"), lobby_id)
-
+        # first client tries to join
         self.client1.emit("join_game", {"lobby_id": lobby_id,})
-        self.assertEqual(self.client1.get_received().pop().get("name"), "game_joined")
+        self.assertEqual(get_resp_arg(self.client1, "joined"), True)
         
         # second client joins
         self.client2.emit("join_game", {"lobby_id": lobby_id})
-        self.assertEqual(self.client2.get_received().pop().get("name"), "game_joined")
-
-        # third client checks if space available and fails to join
-        self.client3.emit("has_space_available", {"lobby_id": lobby_id})
-        self.assertEqual(self.client3.get_received().pop().get("name"), "failed_to_join")
+        self.assertEqual(get_resp_arg(self.client2, "joined"), True)
 
         self.client3.emit("join_game", {"lobby_id": lobby_id})
-        self.assertEqual(self.client3.get_received().pop().get("name"), "failed_to_join")
+        self.assertEqual(get_resp_arg(self.client3, "joined"), False)
 
         # first client disconnects and third sucessfully joins
         self.client1.disconnect()
         self.client3.emit("join_game", {"lobby_id": lobby_id})
-        self.assertEqual(self.client3.get_received().pop().get("name"), "game_joined")
+        self.assertEqual(get_resp_arg(self.client3, "joined"), True)
 
         # second and third client disconnect, and fourth fails to join
         self.client2.disconnect()
         self.client3.disconnect()
 
-        self.client4.emit("has_space_available", {"lobby_id": lobby_id})
-        self.assertEqual(self.client4.get_received().pop().get("name"), "failed_to_join")
-
         self.client4.emit("join_game", {"lobby_id": lobby_id})
-        self.assertEqual(self.client4.get_received().pop().get("name"), "failed_to_join")
+        self.assertEqual(get_resp_arg(self.client4, "joined"), False)

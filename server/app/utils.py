@@ -10,3 +10,9 @@ def generate_code(excluding=[], code_len=4):
 
     while (s := random_string(code_len)) in excluding: ...
     return s
+
+def log(message):
+    red = "\033[0;31m"
+    white = "\033[0;97m"
+
+    print(red, message, white)

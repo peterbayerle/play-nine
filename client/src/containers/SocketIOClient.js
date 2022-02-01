@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 const { io } = require('socket.io-client');
 
-export const SocketIOClient = ({ router }) => {
+export const SocketIOClient = ({ children }) => {
     const [socket, setSocket] = useState({
         on: () => {},
         off : () => {},
@@ -9,22 +9,16 @@ export const SocketIOClient = ({ router }) => {
     });
 
     useEffect(() => {
-        const s = io('http://127.0.0.1:5000/');
-
-        const recievedConnect = () => {
+        const recievedConnect = (s) => {
             setSocket(s);
+            s.emit('player_connect', {player_id: s.id});
         };
 
-        s.on('connect', recievedConnect);
-
-        return () => {
-            s.off('connect', recievedConnect);
-        }
+        const _socket = io('http://127.0.0.1:5000/');
+        _socket.on('connect', () => { 
+            recievedConnect(_socket) 
+        });
     }, []);
 
-    useEffect(() => {
-        socket.emit('player_joined', {player_id: socket.id});
-    }, [socket])
-
-    return <>{router({socket})}</>
+    return <>{children({socket})}</>
 }

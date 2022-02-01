@@ -5,16 +5,23 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const App = () => {
   return (
-    <SocketIOClient
-      router={ (props) => (
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Home {...props} />}></Route>
-            <Route path=":lobbyId" element={<Game {...props} />}></Route>
-          </Routes>
-        </BrowserRouter>
-      )}
-    />
+    <BrowserRouter>
+      <Routes>
+        <Route exact path="/" element={
+            <SocketIOClient>
+              {(props) => <Home {...props} />}
+            </SocketIOClient>
+          }>
+        </Route>
+        <Route path="/:lobbyId" 
+          element={
+            <SocketIOClient>
+              {(props) => <Game {...props} />}
+            </SocketIOClient>
+          }
+        ></Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

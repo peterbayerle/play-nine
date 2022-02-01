@@ -2,6 +2,10 @@ from flask import Flask
 from flask_socketio import SocketIO
 from app.games_manager import GamesManager
 
+import logging
+l = logging.getLogger()
+l.addHandler(logging.FileHandler("/dev/null"))
+
 socketio = SocketIO(cors_allowed_origins="*")
 games_manager = GamesManager()
 

@@ -1,6 +1,5 @@
-from app.utils import generate_code
+from app.utils import generate_code, log
 from app.play_nine import PlayNine
-
 
 class Game: 
     def __init__(self, lobby_id):
@@ -36,6 +35,9 @@ class Game:
         c += 1 if self.players['p2'] else 0
         return c
 
+    def __repr__(self):
+        return f'Game({self.lobby_id=}, {self.players=})'
+
 class GamesManager: 
     def __init__(self):
         self.lobby_to_game = {} # maps lobby id to game
@@ -60,6 +62,7 @@ class GamesManager:
         player_added = game.add_player(player_id)
         if player_added:
             self.player_to_lobby[player_id] = lobby_id
+            log(f'{player_id} added to {game}')
         
         return player_added
 
@@ -71,6 +74,8 @@ class GamesManager:
 
             game = self.lobby_to_game[lobby_id]
             game.remove_player(player_id)
+            log(f'{player_id} removed from {game}')
 
             if not game.num_players:
                 del self.lobby_to_game[lobby_id]
+                log(f'{lobby_id} deleted')
