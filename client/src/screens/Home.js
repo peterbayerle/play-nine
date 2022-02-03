@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
-import InputGroup from 'react-bootstrap/InputGroup'
-import FormControl from 'react-bootstrap/FormControl'
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
 import { useNavigate } from 'react-router-dom';
 
 import './Home.css'
@@ -30,35 +30,41 @@ export const Home = ({ socket }) => {
     // eslint-disable-next-line
     }, [socket])
 
-    return ( 
-        <Container id="home-page">
-            <h1 className="text-center pt-3">️🏌️‍♂️ Play Nine! 🏌️‍♀️</h1>
-            <div className="d-flex flex-column justify-content-center pt-2">
-                <Button
-                    variant="info"
-                    onClick={createGame}
-                >
-                    Create New Game
-                </Button>
+    const JoinGame = () => (
+      <InputGroup className="mb-3 pt-3">
+          <FormControl
+              placeholder="Lobby Id"
+              aria-label="Enter Lobby Id"
+              aria-describedby="basic-addon2"
+              onChange={event => { setFieldEntry(event.target.value); }}
+              className="rounded-left"
+          />
+          <InputGroup.Append>
+          <Button
+              className="rounded-right"
+              variant="info"
+              onClick={submitFieldEntry}
+              disabled={fieldEntry.length !== 4}
+          >Join game</Button>
+          </InputGroup.Append>
+      </InputGroup>
+    )
 
-                <InputGroup className="mb-3 pt-3">
-                    <FormControl
-                        placeholder="Lobby Id"
-                        aria-label="Enter Lobby Id"
-                        className={"rounded-left"}
-                        // onSubmit={submitFieldEntry}
-                        onChange={event => { setFieldEntry(event.target.value); }}
-                    />
-                    <Button 
-                        className="rounded" 
+    return ( 
+        <div>
+            <h1 className="text-center pt-3">️🏌️‍♂️ Play Nine! 🏌️‍♀️</h1>
+            <Container id="home-page">
+                <div className="d-flex flex-column justify-content-center pt-2">
+                    <Button
                         variant="info"
-                        onClick={submitFieldEntry}
-                        disabled={fieldEntry.length !== 4}
+                        onClick={createGame}
                     >
-                        Join game
+                        Create New Game
                     </Button>
-                </InputGroup>
-            </div>
-        </Container>
+
+                    <JoinGame />
+                </div>
+            </Container>
+        </div>
     );
 };
