@@ -15,4 +15,4 @@ def log(message):
     red = "\033[0;31m"
     white = "\033[0;97m"
 
-    print(red, message, white)
+    print(red, message, white, sep='')
