@@ -3,6 +3,7 @@ A real-time card game for the browser
 ## Demo
 Two players can join a lobby and play cards in real time:
 <img src="static/gameplay.gif">
+
 At the end of the game, scores are tallied and a winner is declared:
 <img src="static/gameover.png">
 
