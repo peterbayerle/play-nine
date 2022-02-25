@@ -8,63 +8,52 @@ import { useNavigate } from 'react-router-dom';
 import './Home.css'
 
 export const Home = ({ socket }) => {
-    const [fieldEntry, setFieldEntry] = useState('');
-    const navigate = useNavigate();
+  const [fieldEntry, setFieldEntry] = useState('');
+  const navigate = useNavigate();
 
-    const createGame = () => {
-        socket.emit("create_game");
-    }
+  const recievedGameCreated = ({ lobby_id }) => {
+    navigate(`/${lobby_id}`);
+  };
 
-    const recievedGameCreated = ({ lobby_id }) => {
-        navigate(`/${lobby_id}`);
-    }
+  useEffect(() => {
+    socket.on('game_created', recievedGameCreated);
 
-    const submitFieldEntry = _ => { recievedGameCreated({lobby_id: fieldEntry}); }
+  // eslint-disable-next-line
+  }, [socket])
 
-    useEffect(() => {
-        socket.on('game_created', recievedGameCreated);
+  return ( 
+    <div>
+      <h1 className="text-center pt-3">️🏌️‍♂️ Play Nine! 🏌️‍♀️</h1>
+        <Container id="home-page">
+          <div className="d-flex flex-column justify-content-center pt-2">
+            <Button
+                variant="info"
+                onClick={() => { socket.emit("create_game"); }}
+            >
+                Create New Game
+            </Button>
 
-        return () => {
-            socket.off('game_created', recievedGameCreated);
-        }
-    // eslint-disable-next-line
-    }, [socket])
-
-    const JoinGame = () => (
-      <InputGroup className="mb-3 pt-3">
-          <FormControl
-              placeholder="Lobby Id"
-              aria-label="Enter Lobby Id"
-              aria-describedby="basic-addon2"
-              onChange={event => { setFieldEntry(event.target.value); }}
-              className="rounded-left"
-          />
-          <InputGroup.Append>
-          <Button
-              className="rounded-right"
-              variant="info"
-              onClick={submitFieldEntry}
-              disabled={fieldEntry.length !== 4}
-          >Join game</Button>
-          </InputGroup.Append>
-      </InputGroup>
-    )
-
-    return ( 
-        <div>
-            <h1 className="text-center pt-3">️🏌️‍♂️ Play Nine! 🏌️‍♀️</h1>
-            <Container id="home-page">
-                <div className="d-flex flex-column justify-content-center pt-2">
-                    <Button
-                        variant="info"
-                        onClick={createGame}
-                    >
-                        Create New Game
-                    </Button>
-
-                    <JoinGame />
-                </div>
-            </Container>
+            <div>
+              <InputGroup className="mb-3 pt-3">
+                <FormControl
+                  placeholder="Lobby Id"
+                  aria-label="Enter Lobby Id"
+                  aria-describedby="basic-addon2"
+                  onChange={event => setFieldEntry(event.target.value)}
+                  className="rounded-left"
+                />
+                <InputGroup.Append>
+                <Button
+                  className="rounded-right"
+                  variant="info"
+                  onClick={_ => { recievedGameCreated({lobby_id: fieldEntry}); }}
+                  disabled={fieldEntry.length !== 4}
+                >Join game</Button>
+                </InputGroup.Append>
+            </InputGroup>
+          </div>
         </div>
-    );
+      </Container>
+  </div>
+  );
 };

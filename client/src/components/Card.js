@@ -18,7 +18,7 @@ export const Card = ({value, onClick, player, faceUp, clickable}) => {
       style={{'fontSize':'25px'}}
       onClick={onClick}
     >
-    {faceUp && value}
+      {faceUp && value}
     </Button>
   );
 };

@@ -71,11 +71,11 @@ class TestPlayNine(unittest.TestCase):
     def test_stage(self):
         play_nine = PlayNine()
         play_nine.deal()
-        self.assertEqual(play_nine.stage, "tee_up")
+        self.assertEqual(play_nine.stage, "tee_off")
 
         play_nine.flip("p1", 0)
         play_nine.flip("p1", 1)
-        self.assertEqual(play_nine.stage, "tee_up")
+        self.assertEqual(play_nine.stage, "tee_off")
         play_nine.flip("p2", 0)
         play_nine.flip("p2", 1)
         self.assertEqual(play_nine.stage, "play")
